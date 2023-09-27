@@ -7,12 +7,18 @@ Please refer to the original work for more information:
 
 
 def calculate_bbwp(price, bbwLen, bbwpLen):
-    # Calculate the moving average (basis)
+    """Calculate the Bollinger Bands Width Percentile (BBWP) of a given close price series.
+    :param price: Series of close prices.
+    :param bbwLen: The time period to be used in calculating the Moving average
+     which creates the Basis for the BBW component of the BBWP.
+    :param bbwpLen: The lookback period to be used in calculating the BBWP itself"""
+    # Convert price to a Series if it is not already
     close = pd.Series(price)
 
     if len(close) < bbwLen:
         return None
 
+    # Calculate the BBW
     bbw = ta.bbands(close=close, length=bbwLen, std=2)["BBB_20_2.0"]
 
     # Initialize variables
@@ -30,13 +36,13 @@ def calculate_bbwp(price, bbwLen, bbwpLen):
         return None
 
 
-def bbwp(data):
+def bbwp(data, bbwLen, bbwpLen):
+    """Calculate the rolling BBWP of a given close price series."""
     rolling_bbwp = []
 
     i = 0
     while i < len(data):
-        print(i)
-        rolling_bbwp.append(calculate_bbwp(data[:i + 1], 20, 252))
+        rolling_bbwp.append(calculate_bbwp(data[:i + 1], bbwLen, bbwpLen))
         i += 1
 
     return pd.Series(rolling_bbwp)
